@@ -29,6 +29,16 @@ app.use(express.static(path.join(__dirname, "public")));
 
 // 6) Settingup routes
 app.use("/", require("./routes/root"));
+app.all("*", (req, res) => {
+  res.status(404);
+  if (req.accepts("html")) {
+    res.sendFile(path.join(__dirname, "views", "404.html"));
+  } else if (req.accepts("json")) {
+    res.json({ status: "failes", message: "404 Not Found!" });
+  } else {
+    res.type("txt").send("404 Not Found!");
+  }
+});
 
 // 7) Check connection of DB , then lestining to server.
 mongoose.connection.once("open", () => {
