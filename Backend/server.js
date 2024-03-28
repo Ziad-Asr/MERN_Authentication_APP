@@ -1,5 +1,6 @@
 const express = require("express");
 const mongoose = require("mongoose");
+const path = require("path");
 
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
@@ -20,19 +21,22 @@ app.use(cors(corsOptions));
 // 3) Parsing cookies sent with each request
 app.use(cookieParser());
 
-// 4) Make server accept json format in requestes
+// 4) Make server (Backend) accept json format in requestes
 app.use(express.json());
 
-// 5) Check connection of DB , then lestining to server.
+// 5) Allow acces of static files in the public folder (which holds assets and styles of the project)
+app.use(express.static(path.join(__dirname, "public")));
+
+// 6) Settingup routes
+app.use("/", require("./routes/root"));
+
+// 7) Check connection of DB , then lestining to server.
 mongoose.connection.once("open", () => {
   console.log("Connected to DB!");
 
-  app.listen(
-    (Port,
-    () => {
-      console.log(`App is running on port ${Port}!`);
-    })
-  );
+  app.listen(Port, () => {
+    console.log(`App is running on port ${Port}!`);
+  });
 });
 
 mongoose.connection.on("error", (err) => {
