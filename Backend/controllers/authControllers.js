@@ -1,7 +1,66 @@
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 
-exports.register = async (req, res) => {};
+exports.register = async (req, res) => {
+  const { first_name, last_name, email, password } = req.body;
 
-exports.login = async (req, res) => {};
+  // Validate Inputs
+  if (!first_name || !last_name || !email || !password) {
+    return res.status(400).send({
+      message: "All fields are required!",
+    });
+  }
 
-exports.logout = async (req, res) => {};
+  // Check if user is already exist
+  const foundUser = await User.findOne({ email }).exec();
+  if (foundUser) {
+    return res.status(400).send({
+      message: "User already exist!",
+    });
+  }
+
+  // Hash password
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  // Create new user
+  const newUser = await User.create({
+    first_name,
+    last_name,
+    email,
+    password: hashedPassword,
+  });
+
+  // Generate (access token && refresh token)
+  const accessToken = jwt.sign(
+    { _id: newUser._id },
+    process.env.ACCESS_TOKEN_SECTRET,
+    {
+      expiresIn: "15m",
+    }
+  ); // Here I used user id in db not email for example (because this token can be decoded and get info in it by hakers)
+
+  const refreshToken = jwt.sign(
+    { _id: newUser._id },
+    process.env.REFRESH_TOKEN_SECTRET,
+    {
+      expiresIn: "7d",
+    }
+  );
+
+  // Assign refresh token into brower cookies
+  res.cookie("jwt", refreshToken, {
+    httpOnly: true, // Can access this cookie using http protocol only (not using any js code like document.cookies or any code else)
+    secure: true, // Access it only with https (in production)
+    sameSite: "None", // This cookie can be stored  on any domain name (Main domain (website) and subdomain (page in website))
+    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+  });
+
+  // Send Response
+  res.status(201).json({
+    first_name: newUser.first_name,
+    last_name: newUser.last_name,
+    email: newUser.email,
+    accessToken,
+  });
+};
