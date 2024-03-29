@@ -33,7 +33,11 @@ exports.register = async (req, res) => {
 
   // Generate (access token && refresh token)
   const accessToken = jwt.sign(
-    { _id: newUser._id },
+    {
+      UserInfo: {
+        id: foundUser._id,
+      },
+    },
     process.env.ACCESS_TOKEN_SECTRET,
     {
       expiresIn: "15m",
@@ -41,7 +45,11 @@ exports.register = async (req, res) => {
   ); // Here I used user id in db not email for example (because this token can be decoded and get info in it by hakers)
 
   const refreshToken = jwt.sign(
-    { _id: newUser._id },
+    {
+      UserInfo: {
+        id: foundUser._id,
+      },
+    },
     process.env.REFRESH_TOKEN_SECTRET,
     {
       expiresIn: "7d",
@@ -93,7 +101,11 @@ exports.login = async (req, res) => {
 
   // Generate (access token && refresh token)
   const accessToken = jwt.sign(
-    { _id: foundUser._id },
+    {
+      UserInfo: {
+        id: foundUser._id,
+      },
+    },
     process.env.ACCESS_TOKEN_SECTRET,
     {
       expiresIn: "15m",
@@ -101,7 +113,11 @@ exports.login = async (req, res) => {
   ); // Here I used user id in db not email for example (because this token can be decoded and get info in it by hakers)
 
   const refreshToken = jwt.sign(
-    { _id: foundUser._id },
+    {
+      UserInfo: {
+        id: foundUser._id,
+      },
+    },
     process.env.REFRESH_TOKEN_SECTRET,
     {
       expiresIn: "7d",
