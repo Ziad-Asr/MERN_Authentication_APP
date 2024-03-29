@@ -1,3 +1,3 @@
-const allowedOrigins = [process.env.FRONTEND_HOST];
+const allowedOrigins = ["http://localhost:3000"];
 
 module.exports = allowedOrigins;
