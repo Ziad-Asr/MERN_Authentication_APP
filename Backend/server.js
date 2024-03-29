@@ -29,8 +29,11 @@ app.use(express.static(path.join(__dirname, "public")));
 
 // 6) Settingup routes
 app.use("/", require("./routes/root"));
+app.use("/auth", require("./routes/authRoutes"));
+
 app.all("*", (req, res) => {
   res.status(404);
+
   if (req.accepts("html")) {
     res.sendFile(path.join(__dirname, "views", "404.html"));
   } else if (req.accepts("json")) {
