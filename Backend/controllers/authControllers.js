@@ -138,3 +138,35 @@ exports.login = async (req, res) => {
     accessToken,
   });
 };
+
+exports.refresh = (req, res) => {
+  const cookies = req.cookies; // req => headers (req here like the frontend who sends cookies)
+
+  if (!cookies?.jwt) res.status(401).json({ message: "Unauthorized" });
+
+  const refreshToken = cookies.jwt;
+
+  jwt.verify(
+    refreshToken,
+    process.env.REFRESH_TOKEN_SECTRET,
+    async (err, decoded) => {
+      if (err) return res.status(403).json({ message: "Forbidden" });
+
+      const foundUser = await User.findById(decoded.UserInfo.id).exec();
+
+      if (!foundUser) return res.status(401).json({ message: "Unauthorized" });
+
+      const accessToken = jwt.sign(
+        {
+          UserInfo: {
+            id: foundUser._id,
+          },
+        },
+        process.env.ACCESS_TOKEN_SECTRET,
+        { expiresIn: 10 }
+      );
+
+      res.json({ accessToken });
+    }
+  );
+};
