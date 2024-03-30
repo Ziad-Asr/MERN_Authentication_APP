@@ -22,14 +22,6 @@ function App() {
     createRoutesFromElements(
       <Route path="/" element={<RootLayout />}>
         <Route index element={<h1>Authentication App</h1>} />
-
-        {/* <Route path="auth">
-          <Route path="login" element={<Login />} />
-          <Route path="signup" element={<Signup />} />
-        </Route>
-
-        <Route path="/dashboard" element={<Dashboard />} /> */}
-
         <Route path="auth">
           <Route
             path="login"
