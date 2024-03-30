@@ -35,7 +35,7 @@ exports.register = async (req, res) => {
   const accessToken = jwt.sign(
     {
       UserInfo: {
-        id: foundUser._id,
+        id: foundUser?._id,
       },
     },
     process.env.ACCESS_TOKEN_SECTRET,
@@ -47,7 +47,7 @@ exports.register = async (req, res) => {
   const refreshToken = jwt.sign(
     {
       UserInfo: {
-        id: foundUser._id,
+        id: foundUser?._id,
       },
     },
     process.env.REFRESH_TOKEN_SECTRET,
@@ -103,7 +103,7 @@ exports.login = async (req, res) => {
   const accessToken = jwt.sign(
     {
       UserInfo: {
-        id: foundUser._id,
+        id: foundUser?._id,
       },
     },
     process.env.ACCESS_TOKEN_SECTRET,
@@ -115,7 +115,7 @@ exports.login = async (req, res) => {
   const refreshToken = jwt.sign(
     {
       UserInfo: {
-        id: foundUser._id,
+        id: foundUser?._id,
       },
     },
     process.env.REFRESH_TOKEN_SECTRET,
@@ -159,7 +159,7 @@ exports.refresh = (req, res) => {
       const accessToken = jwt.sign(
         {
           UserInfo: {
-            id: foundUser._id,
+            id: foundUser?._id,
           },
         },
         process.env.ACCESS_TOKEN_SECTRET,

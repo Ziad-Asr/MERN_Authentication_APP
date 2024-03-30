@@ -65,7 +65,7 @@ const SignupForm = () => {
                 };
               })
             }
-            minLength={5}
+            // minLength={5}
             required
           />
         </fieldset>
@@ -84,7 +84,7 @@ const SignupForm = () => {
                 };
               })
             }
-            minLength={5}
+            // minLength={5}
             required
           />
         </fieldset>
