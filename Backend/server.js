@@ -28,9 +28,9 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
 
 // 6) Settingup routes
-app.use("/", require("./routes/root"));
-app.use("/auth", require("./routes/authRoutes"));
-app.use("/users", require("./routes/usersRoutes"));
+app.use("/", require("./routes/root.route"));
+app.use("/auth", require("./routes/authRoutes.route"));
+app.use("/users", require("./routes/usersRoutes.route"));
 
 app.all("*", (req, res) => {
   res.status(404);

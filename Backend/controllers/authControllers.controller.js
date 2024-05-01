@@ -1,6 +1,6 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const User = require("../models/User");
+const User = require("../models/User.model");
 
 exports.register = async (req, res) => {
   const { first_name, last_name, email, password } = req.body;
@@ -110,7 +110,7 @@ exports.login = async (req, res) => {
     {
       expiresIn: "15m",
     }
-  ); // Here I used user id in db not email for example (because this token can be decoded and get info in it by hakers)
+  ); // Here I used user id in db not email for example (because this token can be decoded and get info from it by hakers)
 
   const refreshToken = jwt.sign(
     {
@@ -139,6 +139,20 @@ exports.login = async (req, res) => {
   });
 };
 
+exports.logout = (req, res) => {
+  const cookies = req.cookies;
+
+  if (!cookies?.jwt) return res.sendStatus(204); //No content
+
+  res.clearCookie("jwt", {
+    httpOnly: true,
+    sameSite: "None",
+    secure: true,
+  });
+
+  res.json({ message: "Cookie cleared" });
+};
+
 exports.refresh = (req, res) => {
   const cookies = req.cookies; // req => headers (req here like the frontend who sends cookies)
 
@@ -163,24 +177,10 @@ exports.refresh = (req, res) => {
           },
         },
         process.env.ACCESS_TOKEN_SECTRET,
-        { expiresIn: 10 }
+        { expiresIn: "15m" }
       );
 
       res.json({ accessToken });
     }
   );
-};
-
-exports.logout = (req, res) => {
-  const cookies = req.cookies;
-
-  if (!cookies?.jwt) return res.sendStatus(204); //No content
-
-  res.clearCookie("jwt", {
-    httpOnly: true,
-    sameSite: "None",
-    secure: true,
-  });
-
-  res.json({ message: "Cookie cleared" });
 };
