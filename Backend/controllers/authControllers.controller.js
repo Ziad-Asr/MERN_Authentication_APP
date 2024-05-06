@@ -1,10 +1,13 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User.model");
+const { response } = require("express");
 
 exports.register = async (req, res) => {
   const { first_name, last_name, email, password } = req.body;
 
+  // ########################################################
+  // ################### Validation #########################
   // Validate Inputs
   if (!first_name || !last_name || !email || !password) {
     return res.status(400).send({
@@ -19,6 +22,8 @@ exports.register = async (req, res) => {
       message: "User already exist!",
     });
   }
+  // ################### Validation #########################
+  // ########################################################
 
   // Hash password
   const hashedPassword = await bcrypt.hash(password, 10);
@@ -35,24 +40,24 @@ exports.register = async (req, res) => {
   const accessToken = jwt.sign(
     {
       UserInfo: {
-        id: foundUser?._id,
+        id: newUser?._id,
       },
     },
     process.env.ACCESS_TOKEN_SECTRET,
     {
-      expiresIn: "15m",
+      expiresIn: "15m", // (expiration date in the {{{ Server }}})
     }
   ); // Here I used user id in db not email for example (because this token can be decoded and get info in it by hakers)
 
   const refreshToken = jwt.sign(
     {
       UserInfo: {
-        id: foundUser?._id,
+        id: newUser?._id,
       },
     },
     process.env.REFRESH_TOKEN_SECTRET,
     {
-      expiresIn: "7d",
+      expiresIn: "7d", // (expiration date in the {{{ Server }}})
     }
   );
 
@@ -61,7 +66,7 @@ exports.register = async (req, res) => {
     httpOnly: true, // Can access this cookie using http protocol only (not using any js code like document.cookies or any code else)
     secure: true, // Access it only with https (in production)
     sameSite: "None", // This cookie can be stored  on any domain name (Main domain (website) and subdomain (page in website))
-    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days (expiration date in the {{{ Browser }}})
   });
 
   // Send Response
@@ -167,7 +172,6 @@ exports.refresh = (req, res) => {
       if (err) return res.status(403).json({ message: "Forbidden" });
 
       const foundUser = await User.findById(decoded.UserInfo.id).exec();
-
       if (!foundUser) return res.status(401).json({ message: "Unauthorized" });
 
       const accessToken = jwt.sign(

@@ -2,7 +2,6 @@ const jwt = require("jsonwebtoken");
 
 exports.verifyJWT = (req, res, next) => {
   // Frondend will send access token in headers
-
   const authHeader = req.headers.authorization || req.headers.Authorization;
 
   if (!authHeader?.startsWith("Bearer ")) {
